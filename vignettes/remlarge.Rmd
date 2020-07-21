@@ -3,7 +3,7 @@ title: "remlarge"
 author: 
   - Vince Carey^[stvjc@channing.harvard.edu]
 vignette: >
-  %\VignetteIndexEntry{remote large data in bioc}
+  %\VignetteIndexEntry{Working with remote large data in Bioconductor}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 output: 
@@ -23,15 +23,6 @@ library(BiocStyle)
 
 # Introduction
 
-This vignette reviews basic aspects of interacting with omicidx to
-obtain metadata about metagenomics studies available in NCBI SRA.
+This vignette reviews basic aspects of using Bioconductor with
+remote data services for very large data.
 
-## A quick view of a query about a study
-
-To get things rolling, let's assume we know the identifier for
-an SRA _study_ of interest: SRP114847.  How we discover identifiers
-for studies or families of studies will be discussed later.
-
-We can obtain a rectangular table of information about SRP114847
-by querying a specific _endpoint_ of the omicidx API.  We'll
-use the "runs for study" endpoint and then discuss why and how afterwards.

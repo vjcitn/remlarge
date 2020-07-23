@@ -24,5 +24,9 @@ library(BiocStyle)
 # Introduction
 
 This vignette reviews basic aspects of using Bioconductor with
-remote data services for very large data.
+remote data services for very large data.  We'll consider how to
 
+- access HDF5 directly from AWS S3 buckets using rhdf5
+- use a RESTful API to interrogate HDF5 in the HDF Scalable Data Service
+- wrap Google BigQuery tables in SummarizedExperiment instances
+- work with TileDb data resources

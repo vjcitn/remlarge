@@ -10,6 +10,9 @@ at localhost:8787.
 Hit the [Get started](https://vjcitn.github.io/remlarge/articles/remlarge.html) button to
 start learning about resource for working with remote large data.
 
+As a very basic illustration of the sort of thing we'll be looking at, here we
+use bioc 3.12 rhdf5 to interrogate HDF5 data that are simply present in S3 buckets.
+
 ```
 > zz
 [1] "https://bcfound-bigrna.s3.amazonaws.com/ca30k.h5"

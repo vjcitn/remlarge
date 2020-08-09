@@ -1,0 +1,52 @@
+---
+title: "A look at a cloud-resident data service: HSDS (HDF Scalable Data Service)"
+author: Vince Carey^[stvjc@channing.harvard.edu]
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A look at a cloud-resident data service: HSDS (HDF Scalable Data Service)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Taking a look at HumanTranscriptomeCompendium
+```{r setup}
+suppressPackageStartupMessages({
+library(BiocStyle)
+})
+```
+
+Following on Sean Davis' BigRNA project, in which 181000+ RNA-seq
+studies in NCBI SRA are processed by a salmon-based workflow,
+we transformed the gene-level quantifications to HDF5 and
+loaded them into the HDF Scalable Data Service (HSDS).
+
+The `r Biocpkg("restfulSE")` package uses `r Biocpkg("rhdf5client")` to implement a
+`r Biocpkg("DelayedArray")`/`r Biocpkg("SummarizedExperiment")` interface to this collection
+of transcriptomes.
+
+```{r lk1}
+suppressPackageStartupMessages({
+library(HumanTranscriptomeCompendium)
+library(SummarizedExperiment)
+})
+htx = htx_load()
+htx
+system.time(lka <- assay(htx))
+lka
+```
+
+The metadata for each sample in this
+compendium is limited; Sean Davis' Omicidx
+can be queried for more attributes.
+```{r lk2}
+names(colData(htx))
+head(sort(table(htx$study_title), decreasing=TRUE))
+```
+

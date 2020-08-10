@@ -100,13 +100,16 @@
 
     
     
-<div id="taking-a-look-at-humantranscriptomecompendium" class="section level1">
+<div id="humantranscriptomecompendium-first-glimpses" class="section level1">
 <h1 class="hasAnchor">
-<a href="#taking-a-look-at-humantranscriptomecompendium" class="anchor"></a>Taking a look at HumanTranscriptomeCompendium</h1>
+<a href="#humantranscriptomecompendium-first-glimpses" class="anchor"></a>HumanTranscriptomeCompendium: First glimpses</h1>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressPackageStartupMessages</a></span>({
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">BiocStyle</span>)
 })</pre></body></html></div>
-<p>Following on Sean Davis’ BigRNA project, in which 181000+ RNA-seq studies in NCBI SRA are processed by a salmon-based workflow, we transformed the gene-level quantifications to HDF5 and loaded them into the HDF Scalable Data Service (HSDS).</p>
+<p>Following on Sean Davis’ BigRNA project, in which 181000+ RNA-seq studies in NCBI SRA are uniformly processed by a salmon-based workflow, we transformed the gene-level quantifications to HDF5 and loaded them into the HDF Scalable Data Service (HSDS).</p>
+<div id="the-restful-summarizedexperiment-view" class="section level2">
+<h2 class="hasAnchor">
+<a href="#the-restful-summarizedexperiment-view" class="anchor"></a>The RESTful SummarizedExperiment view</h2>
 <p>The <em><a href="https://bioconductor.org/packages/3.12/restfulSE">restfulSE</a></em> package uses <em><a href="https://bioconductor.org/packages/3.12/rhdf5client">rhdf5client</a></em> to implement a <em><a href="https://bioconductor.org/packages/3.12/DelayedArray">DelayedArray</a></em>/<em><a href="https://bioconductor.org/packages/3.12/SummarizedExperiment">SummarizedExperiment</a></em> interface to this collection of transcriptomes.</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressPackageStartupMessages</a></span>({
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">HumanTranscriptomeCompendium</span>)
@@ -114,7 +117,7 @@
 })
 <span class="no">htx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/HumanTranscriptomeCompendium/man/htx_load.html">htx_load</a></span>()
 <span class="co">#&gt; Loading required namespace: BiocFileCache</span>
-<span class="co">#&gt; using temporary cache /tmp/Rtmp4Ph6uB/BiocFileCache</span>
+<span class="co">#&gt; using temporary cache /tmp/RtmpJPukYc/BiocFileCache</span>
 <span class="co">#&gt; adding RDS to local cache, future invocations will use local image</span>
 <span class="co">#&gt; adding rname 'https://s3.amazonaws.com/bcfound-bigrna/rangedHtxGeneSE.rds'</span>
 <span class="no">htx</span>
@@ -131,7 +134,7 @@
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(<span class="no">lka</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">assay</a></span>(<span class="no">htx</span>))
 <span class="co">#&gt; Loading required package: rhdf5client</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.184   0.004   0.189</span>
+<span class="co">#&gt;   0.137   0.000   0.137</span>
 <span class="no">lka</span>
 <span class="co">#&gt; &lt;58288 x 181134&gt; matrix of class DelayedMatrix and type "double":</span>
 <span class="co">#&gt;                       DRX001125    DRX001126    DRX001127 ...  SRX999990</span>
@@ -176,6 +179,106 @@
 <span class="co">#&gt;                                                                                                                     3493 </span>
 <span class="co">#&gt;        Single-Cell RNAseq analysis of diffuse neoplastic infiltrating cells at the migrating front of human glioblastoma </span>
 <span class="co">#&gt;                                                                                                                     3383</span></pre></body></html></div>
+</div>
+<div id="more-on-metadata" class="section level2">
+<h2 class="hasAnchor">
+<a href="#more-on-metadata" class="anchor"></a>More on metadata</h2>
+<p>To obtain the metadata on a study in this compendium, we can use the OmicIDX API. The following function retrieves available information, given an SRA study accession number:</p>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">meta_by_study</span> <span class="kw">=</span> <span class="kw">function</span>(<span class="no">study_accession</span>,
+   <span class="no">urlbase</span> <span class="kw">=</span> <span class="st">"https://api.omicidx.cancerdatasci.org/sra/studies/"</span>) {
+ <span class="no">md</span> <span class="kw">=</span> <span class="kw pkg">jsonlite</span><span class="kw ns">::</span><span class="fu"><a href="https://jeroen.cran.dev/jsonlite/reference/fromJSON.html">fromJSON</a></span>(<span class="kw">txt</span><span class="kw">=</span>
+   <span class="fu"><a href="https://rdrr.io/r/base/connections.html">url</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="no">urlbase</span>, <span class="no">study_accession</span>, <span class="st">"/runs?size=500"</span>)), <span class="kw">flatten</span><span class="kw">=</span><span class="fl">TRUE</span>)
+ <span class="no">ans</span> <span class="kw">=</span> <span class="kw pkg">tibble</span><span class="kw ns">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span>(<span class="no">md</span>$<span class="no">hits</span>)
+ <span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span>(<span class="no">ans</span>, <span class="st">"cursor"</span>) <span class="kw">=</span> <span class="no">md</span>$<span class="no">cursor</span>
+ <span class="no">ans</span>
+}
+<span class="no">m1</span> <span class="kw">=</span> <span class="fu">meta_by_study</span>(<span class="st">"SRP012682"</span>)  <span class="co"># GTEx</span>
+<span class="no">m1</span>
+<span class="co">#&gt; # A tibble: 500 x 75</span>
+<span class="co">#&gt;    static_data_ava… avg_length sample_accession accession center_name insdc</span>
+<span class="co">#&gt;    &lt;chr&gt;            &lt;chr&gt;      &lt;chr&gt;            &lt;chr&gt;     &lt;chr&gt;       &lt;lgl&gt;</span>
+<span class="co">#&gt;  1 1                152        SRS524195        SRR10686… BI          TRUE </span>
+<span class="co">#&gt;  2 1                152        SRS524196        SRR10687… BI          TRUE </span>
+<span class="co">#&gt;  3 1                152        SRS524197        SRR10688… BI          TRUE </span>
+<span class="co">#&gt;  4 1                152        SRS524198        SRR10688… BI          TRUE </span>
+<span class="co">#&gt;  5 1                152        SRS524199        SRR10688… BI          TRUE </span>
+<span class="co">#&gt;  6 1                152        SRS524200        SRR10688… BI          TRUE </span>
+<span class="co">#&gt;  7 1                152        SRS524201        SRR10689… BI          TRUE </span>
+<span class="co">#&gt;  8 1                152        SRS524202        SRR10689… BI          TRUE </span>
+<span class="co">#&gt;  9 1                152        SRS524203        SRR10689… BI          TRUE </span>
+<span class="co">#&gt; 10 1                152        SRS524204        SRR10689… BI          TRUE </span>
+<span class="co">#&gt; # … with 490 more rows, and 69 more variables: run_center &lt;chr&gt;, alias &lt;chr&gt;,</span>
+<span class="co">#&gt; #   total_bases &lt;chr&gt;, cluster_name &lt;chr&gt;, total_spots &lt;chr&gt;,</span>
+<span class="co">#&gt; #   experiment_accession &lt;chr&gt;, received &lt;chr&gt;, published &lt;chr&gt;,</span>
+<span class="co">#&gt; #   study_accession &lt;chr&gt;, size &lt;chr&gt;, load_done &lt;lgl&gt;, is_public &lt;lgl&gt;,</span>
+<span class="co">#&gt; #   qualities &lt;list&gt;, attributes &lt;list&gt;, lastupdate &lt;chr&gt;, status &lt;chr&gt;,</span>
+<span class="co">#&gt; #   study.pubmed_ids &lt;list&gt;, study.identifiers &lt;list&gt;, study.received &lt;chr&gt;,</span>
+<span class="co">#&gt; #   study.abstract &lt;chr&gt;, study.accession &lt;chr&gt;, study.published &lt;chr&gt;,</span>
+<span class="co">#&gt; #   study.title &lt;chr&gt;, study.center_name &lt;chr&gt;, study.study_type &lt;chr&gt;,</span>
+<span class="co">#&gt; #   study.insdc &lt;lgl&gt;, study.alias &lt;chr&gt;, study.attributes &lt;list&gt;,</span>
+<span class="co">#&gt; #   study.lastupdate &lt;chr&gt;, study.BioProject &lt;chr&gt;, study.status &lt;chr&gt;,</span>
+<span class="co">#&gt; #   experiment.library_layout &lt;chr&gt;, experiment.identifiers &lt;list&gt;,</span>
+<span class="co">#&gt; #   experiment.sample_accession &lt;chr&gt;, experiment.xrefs &lt;list&gt;,</span>
+<span class="co">#&gt; #   experiment.library_layout_sdev &lt;dbl&gt;, experiment.received &lt;chr&gt;,</span>
+<span class="co">#&gt; #   experiment.accession &lt;chr&gt;, experiment.published &lt;chr&gt;,</span>
+<span class="co">#&gt; #   experiment.title &lt;chr&gt;, experiment.library_strategy &lt;chr&gt;,</span>
+<span class="co">#&gt; #   experiment.platform &lt;chr&gt;, experiment.study_accession &lt;chr&gt;,</span>
+<span class="co">#&gt; #   experiment.center_name &lt;chr&gt;, experiment.library_layout_length &lt;int&gt;,</span>
+<span class="co">#&gt; #   experiment.insdc &lt;lgl&gt;, experiment.instrument_model &lt;chr&gt;,</span>
+<span class="co">#&gt; #   experiment.design &lt;chr&gt;, experiment.alias &lt;chr&gt;,</span>
+<span class="co">#&gt; #   experiment.library_name &lt;chr&gt;, experiment.attributes &lt;list&gt;,</span>
+<span class="co">#&gt; #   experiment.library_selection &lt;chr&gt;, experiment.lastupdate &lt;chr&gt;,</span>
+<span class="co">#&gt; #   experiment.library_source &lt;chr&gt;, experiment.status &lt;chr&gt;,</span>
+<span class="co">#&gt; #   sample.organism &lt;chr&gt;, sample.identifiers &lt;list&gt;, sample.xrefs &lt;list&gt;,</span>
+<span class="co">#&gt; #   sample.taxon_id &lt;chr&gt;, sample.received &lt;chr&gt;, sample.accession &lt;chr&gt;,</span>
+<span class="co">#&gt; #   sample.published &lt;chr&gt;, sample.title &lt;chr&gt;, sample.BioSample &lt;chr&gt;,</span>
+<span class="co">#&gt; #   sample.insdc &lt;lgl&gt;, sample.alias &lt;chr&gt;, sample.attributes &lt;list&gt;,</span>
+<span class="co">#&gt; #   sample.lastupdate &lt;chr&gt;, sample.status &lt;chr&gt;</span></pre></body></html></div>
+<p>The metadata structure varies across studies and across samples within studies. The following moves towards a more regular structure by pivoting the nested key-value pairs in sample attributes.</p>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">magrittr</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">dplyr</span>)
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Attaching package: 'dplyr'</span>
+<span class="co">#&gt; The following object is masked from 'package:rhdf5client':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     groups</span>
+<span class="co">#&gt; The following object is masked from 'package:matrixStats':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     count</span>
+<span class="co">#&gt; The following object is masked from 'package:Biobase':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     combine</span>
+<span class="co">#&gt; The following objects are masked from 'package:GenomicRanges':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     intersect, setdiff, union</span>
+<span class="co">#&gt; The following object is masked from 'package:GenomeInfoDb':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     intersect</span>
+<span class="co">#&gt; The following objects are masked from 'package:IRanges':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     collapse, desc, intersect, setdiff, slice, union</span>
+<span class="co">#&gt; The following objects are masked from 'package:S4Vectors':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     first, intersect, rename, setdiff, setequal, union</span>
+<span class="co">#&gt; The following objects are masked from 'package:BiocGenerics':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     combine, intersect, setdiff, union</span>
+<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     filter, lag</span>
+<span class="co">#&gt; The following objects are masked from 'package:base':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
+<span class="no">sa</span> <span class="kw">=</span> <span class="no">m1</span> <span class="kw">%&gt;%</span> <span class="kw pkg">dplyr</span><span class="kw ns">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="no">accession</span>, <span class="no">sample.attributes</span>) <span class="kw">%&gt;%</span>
+   <span class="kw pkg">tidyr</span><span class="kw ns">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span>(<span class="no">sample.attributes</span>) <span class="kw">%&gt;%</span>
+   <span class="kw pkg">tidyr</span><span class="kw ns">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html">pivot_wider</a></span>(<span class="kw">names_from</span><span class="kw">=</span><span class="st">'tag'</span>, <span class="kw">values_from</span><span class="kw">=</span><span class="st">'value'</span>)
+<span class="co">#&gt; Warning: Values are not uniquely identified; output will contain list-cols.</span>
+<span class="co">#&gt; * Use `values_fn = list` to suppress this warning.</span>
+<span class="co">#&gt; * Use `values_fn = length` to identify where the duplicates arise</span>
+<span class="co">#&gt; * Use `values_fn = {summary_fun}` to summarise duplicates</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">sa</span>$<span class="no">`body site`</span>)))
+<span class="co">#&gt; [1] 1</span></pre></body></html></div>
+</div>
 </div>
 <div class="footnotes">
 <hr>

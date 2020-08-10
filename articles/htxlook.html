@@ -114,10 +114,12 @@
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressPackageStartupMessages</a></span>({
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">HumanTranscriptomeCompendium</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">SummarizedExperiment</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">magrittr</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">dplyr</span>)
 })
 <span class="no">htx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/HumanTranscriptomeCompendium/man/htx_load.html">htx_load</a></span>()
 <span class="co">#&gt; Loading required namespace: BiocFileCache</span>
-<span class="co">#&gt; using temporary cache /tmp/RtmpJPukYc/BiocFileCache</span>
+<span class="co">#&gt; using temporary cache /tmp/RtmpsFKXeK/BiocFileCache</span>
 <span class="co">#&gt; adding RDS to local cache, future invocations will use local image</span>
 <span class="co">#&gt; adding rname 'https://s3.amazonaws.com/bcfound-bigrna/rangedHtxGeneSE.rds'</span>
 <span class="no">htx</span>
@@ -133,8 +135,13 @@
 <span class="co">#&gt;   study_accession study_title</span>
 <span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(<span class="no">lka</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html">assay</a></span>(<span class="no">htx</span>))
 <span class="co">#&gt; Loading required package: rhdf5client</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Attaching package: 'rhdf5client'</span>
+<span class="co">#&gt; The following object is masked from 'package:dplyr':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     groups</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.137   0.000   0.137</span>
+<span class="co">#&gt;   0.197   0.000   0.198</span>
 <span class="no">lka</span>
 <span class="co">#&gt; &lt;58288 x 181134&gt; matrix of class DelayedMatrix and type "double":</span>
 <span class="co">#&gt;                       DRX001125    DRX001126    DRX001127 ...  SRX999990</span>
@@ -235,49 +242,21 @@
 <span class="co">#&gt; #   sample.insdc &lt;lgl&gt;, sample.alias &lt;chr&gt;, sample.attributes &lt;list&gt;,</span>
 <span class="co">#&gt; #   sample.lastupdate &lt;chr&gt;, sample.status &lt;chr&gt;</span></pre></body></html></div>
 <p>The metadata structure varies across studies and across samples within studies. The following moves towards a more regular structure by pivoting the nested key-value pairs in sample attributes.</p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">magrittr</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">dplyr</span>)
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'dplyr'</span>
-<span class="co">#&gt; The following object is masked from 'package:rhdf5client':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     groups</span>
-<span class="co">#&gt; The following object is masked from 'package:matrixStats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     count</span>
-<span class="co">#&gt; The following object is masked from 'package:Biobase':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     combine</span>
-<span class="co">#&gt; The following objects are masked from 'package:GenomicRanges':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     intersect, setdiff, union</span>
-<span class="co">#&gt; The following object is masked from 'package:GenomeInfoDb':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     intersect</span>
-<span class="co">#&gt; The following objects are masked from 'package:IRanges':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     collapse, desc, intersect, setdiff, slice, union</span>
-<span class="co">#&gt; The following objects are masked from 'package:S4Vectors':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     first, intersect, rename, setdiff, setequal, union</span>
-<span class="co">#&gt; The following objects are masked from 'package:BiocGenerics':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     combine, intersect, setdiff, union</span>
-<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     filter, lag</span>
-<span class="co">#&gt; The following objects are masked from 'package:base':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
-<span class="no">sa</span> <span class="kw">=</span> <span class="no">m1</span> <span class="kw">%&gt;%</span> <span class="kw pkg">dplyr</span><span class="kw ns">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="no">accession</span>, <span class="no">sample.attributes</span>) <span class="kw">%&gt;%</span>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">sa</span> <span class="kw">=</span> <span class="no">m1</span> <span class="kw">%&gt;%</span> <span class="kw pkg">dplyr</span><span class="kw ns">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="no">accession</span>, <span class="no">sample.attributes</span>) <span class="kw">%&gt;%</span>
    <span class="kw pkg">tidyr</span><span class="kw ns">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span>(<span class="no">sample.attributes</span>) <span class="kw">%&gt;%</span>
    <span class="kw pkg">tidyr</span><span class="kw ns">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html">pivot_wider</a></span>(<span class="kw">names_from</span><span class="kw">=</span><span class="st">'tag'</span>, <span class="kw">values_from</span><span class="kw">=</span><span class="st">'value'</span>)
 <span class="co">#&gt; Warning: Values are not uniquely identified; output will contain list-cols.</span>
 <span class="co">#&gt; * Use `values_fn = list` to suppress this warning.</span>
 <span class="co">#&gt; * Use `values_fn = length` to identify where the duplicates arise</span>
 <span class="co">#&gt; * Use `values_fn = {summary_fun}` to summarise duplicates</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="no">sa</span>$<span class="no">`body site`</span>)))
-<span class="co">#&gt; [1] 1</span></pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="no">sa</span>$<span class="no">`body site`</span>))))
+<span class="co">#&gt; </span>
+<span class="co">#&gt;           Colon - Transverse                     Pancreas </span>
+<span class="co">#&gt;                           17                           19 </span>
+<span class="co">#&gt;                      Stomach           Esophagus - Mucosa </span>
+<span class="co">#&gt;                           22                           37 </span>
+<span class="co">#&gt;       Esophagus - Muscularis Cells - Cultured fibroblasts </span>
+<span class="co">#&gt;                           39                           56</span></pre></body></html></div>
 </div>
 </div>
 <div class="footnotes">

@@ -82,5 +82,5 @@ library(dplyr)
 sa = m1 %>% dplyr::select(accession, sample.attributes) %>% 
    tidyr::unnest(sample.attributes) %>% 
    tidyr::pivot_wider(names_from='tag', values_from='value') 
-tail(sort(table(sa$`body site`)))
+tail(sort(table(unlist(sa$`body site`))))
 ```

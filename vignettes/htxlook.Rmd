@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Taking a look at HumanTranscriptomeCompendium
+# HumanTranscriptomeCompendium: First glimpses
 ```{r setup}
 suppressPackageStartupMessages({
 library(BiocStyle)
@@ -23,9 +23,11 @@ library(BiocStyle)
 ```
 
 Following on Sean Davis' BigRNA project, in which 181000+ RNA-seq
-studies in NCBI SRA are processed by a salmon-based workflow,
+studies in NCBI SRA are uniformly processed by a salmon-based workflow,
 we transformed the gene-level quantifications to HDF5 and
 loaded them into the HDF Scalable Data Service (HSDS).
+
+## The RESTful SummarizedExperiment view
 
 The `r Biocpkg("restfulSE")` package uses `r Biocpkg("rhdf5client")` to implement a
 `r Biocpkg("DelayedArray")`/`r Biocpkg("SummarizedExperiment")` interface to this collection
@@ -50,3 +52,35 @@ names(colData(htx))
 head(sort(table(htx$study_title), decreasing=TRUE))
 ```
 
+## More on metadata
+
+To obtain the metadata on a study in this compendium,
+we can use the OmicIDX API.  The following
+function retrieves available information, given an SRA
+study accession number:
+
+```{r defget}
+meta_by_study = function(study_accession,
+   urlbase = "https://api.omicidx.cancerdatasci.org/sra/studies/") {
+ md = jsonlite::fromJSON(txt=
+   url(paste0(urlbase, study_accession, "/runs?size=500")), flatten=TRUE)
+ ans = tibble::as_tibble(md$hits)
+ attr(ans, "cursor") = md$cursor
+ ans
+}
+m1 = meta_by_study("SRP012682")  # GTEx
+m1
+```
+The metadata structure varies across studies and across samples within
+studies.  The following moves towards a more regular structure
+by pivoting the nested key-value pairs in sample attributes.
+
+
+```{r lksa}
+library(magrittr)
+library(dplyr)
+sa = m1 %>% dplyr::select(accession, sample.attributes) %>% 
+   tidyr::unnest(sample.attributes) %>% 
+   tidyr::pivot_wider(names_from='tag', values_from='value') 
+tail(sort(table(sa$`body site`)))
+```

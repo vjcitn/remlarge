@@ -18,9 +18,9 @@ Depends: R (>= 3.6.0), tidyr, tibble, dplyr, jsonlite, rhdf5client,
 	restfulSE, restfulSEData, BiocOncoTK, basilisk, BiocSklearn,
 	HumanTranscriptomeCompendium
 Suggests: 
-    knitr,
-    rmarkdown,
-    pkgdown, BiocStyle, DT
+    knitr, rmarkdown,
+    pkgdown, BiocStyle, DT,
+    magrittr
 URL: https://vjcitn.github.io/remlarge/
 BugReports: https://github.com/vjcitn/remlarge/issues/new/choose
 VignetteBuilder: knitr

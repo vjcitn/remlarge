@@ -37,6 +37,8 @@ of transcriptomes.
 suppressPackageStartupMessages({
 library(HumanTranscriptomeCompendium)
 library(SummarizedExperiment)
+library(magrittr)
+library(dplyr)
 })
 htx = htx_load()
 htx
@@ -77,8 +79,6 @@ by pivoting the nested key-value pairs in sample attributes.
 
 
 ```{r lksa}
-library(magrittr)
-library(dplyr)
 sa = m1 %>% dplyr::select(accession, sample.attributes) %>% 
    tidyr::unnest(sample.attributes) %>% 
    tidyr::pivot_wider(names_from='tag', values_from='value') 

@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">remlarge</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.14</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.15</span>
       </span>
     </div>
 
@@ -107,6 +107,7 @@
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">BiocStyle</span>)
 })</pre></body></html></div>
 <p>Following on Sean Davis’ BigRNA project, in which 181000+ RNA-seq studies in NCBI SRA are uniformly processed by a salmon-based workflow, we transformed the gene-level quantifications to HDF5 and loaded them into the HDF Scalable Data Service (HSDS).</p>
+<p>We’ll illustrate how to extract the (virtual, you might say) SummarizedExperiment corresponding to the GTEx project, and then use the OmicIdx API to retrieve high-resolution metadata about GTEx samples.</p>
 <div id="the-restful-summarizedexperiment-view" class="section level2">
 <h2 class="hasAnchor">
 <a href="#the-restful-summarizedexperiment-view" class="anchor"></a>The RESTful SummarizedExperiment view</h2>
@@ -119,7 +120,7 @@
 })
 <span class="no">htx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/HumanTranscriptomeCompendium/man/htx_load.html">htx_load</a></span>()
 <span class="co">#&gt; Loading required namespace: BiocFileCache</span>
-<span class="co">#&gt; using temporary cache /tmp/RtmpsFKXeK/BiocFileCache</span>
+<span class="co">#&gt; using temporary cache /tmp/RtmpyKtu5C/BiocFileCache</span>
 <span class="co">#&gt; adding RDS to local cache, future invocations will use local image</span>
 <span class="co">#&gt; adding rname 'https://s3.amazonaws.com/bcfound-bigrna/rangedHtxGeneSE.rds'</span>
 <span class="no">htx</span>
@@ -141,7 +142,7 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt;     groups</span>
 <span class="co">#&gt;    user  system elapsed </span>
-<span class="co">#&gt;   0.197   0.000   0.198</span>
+<span class="co">#&gt;   0.152   0.004   0.157</span>
 <span class="no">lka</span>
 <span class="co">#&gt; &lt;58288 x 181134&gt; matrix of class DelayedMatrix and type "double":</span>
 <span class="co">#&gt;                       DRX001125    DRX001126    DRX001127 ...  SRX999990</span>

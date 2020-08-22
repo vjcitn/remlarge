@@ -27,6 +27,11 @@ studies in NCBI SRA are uniformly processed by a salmon-based workflow,
 we transformed the gene-level quantifications to HDF5 and
 loaded them into the HDF Scalable Data Service (HSDS).
 
+We'll illustrate how to extract the (virtual, you
+might say) SummarizedExperiment corresponding to the GTEx project,
+and then use the OmicIdx API to retrieve high-resolution metadata
+about GTEx samples.
+
 ## The RESTful SummarizedExperiment view
 
 The `r Biocpkg("restfulSE")` package uses `r Biocpkg("rhdf5client")` to implement a
